@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -23,11 +22,8 @@ import com.bokun.bkjcb.chengtou.Util.SPUtils;
 public class LoginActivity extends AppCompatActivity {
 
     private UserLoginTask mAuthTask = null;
-
-    // UI references.
     private EditText mEmailView;
     private EditText mPasswordView;
-    private View mLoginFormView;
     private ProgressDialog dialog;
     private CheckBox checkBox;
 
@@ -50,35 +46,34 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button button = (Button) findViewById(R.id.login_button);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                Toast.makeText(LoginActivity.this, "O(∩_∩)O", Toast.LENGTH_SHORT).show();
+
                 attemptLogin();
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
         String userName = (String) SPUtils.get(this, "UserName", "");
 
         if (!TextUtils.isEmpty(userName)) {
             checkBox.setChecked(true);
             mEmailView.setText(userName);
             mPasswordView.setText((String) SPUtils.get(this, "Password", ""));
+            button.requestFocus();
         }
-        mEmailSignInButton.requestFocus();
     }
 
     private void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
-
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
@@ -125,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         return password.length() > 4;
     }
 
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -141,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Void... params) {
-            return 0;
+            return 1;
         }
 
         @Override
@@ -190,6 +186,9 @@ public class LoginActivity extends AppCompatActivity {
         if (checkBox.isChecked()) {
             SPUtils.put(LoginActivity.this, "UserName", mEmailView.getText().toString());
             SPUtils.put(LoginActivity.this, "Password", mPasswordView.getText().toString());
+        } else {
+            SPUtils.put(LoginActivity.this, "UserName", "");
+            SPUtils.put(LoginActivity.this, "Password", "");
         }
     }
 }

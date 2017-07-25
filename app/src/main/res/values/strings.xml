@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">chengtou</string>
+    <string name="app_name">城投项目管理平台</string>
     <string name="prompt_email">账号</string>
     <string name="prompt_password">密码</string>
     <string name="action_sign_in">登录</string>
@@ -8,4 +8,33 @@
     <string name="error_invalid_password">请输入密码</string>
     <string name="error_incorrect_password">密码错误</string>
     <string name="error_field_required">该账号不存在</string>
+
+    <string-array name="xuanxiang">
+        <item>2.2正式项目</item>
+        <item>2.3预备项目</item>
+        <item>2.4扫尾项目</item>
+        <item>3重大项目</item>
+        <item>3.1重大项目(按行业)</item>
+        <item>4三年环保</item>
+        <item>5.1投资计划(按板块)</item>
+        <item>5.2投资计划(按行业)</item>
+        <item>5.3投资计划(按建设状态)</item>
+        <item>5.4投资计划(按计划类型)</item>
+        <item>6资金使用计划</item>
+        <item>7新增生成能力</item>
+        <item>8分年度投资计划</item>
+        <item>附录二正式项目经验</item>
+        <item>附录三代建项目</item>
+    </string-array>
+    <string-array name="select_items">
+        <item>基本信息</item>
+        <item>审批情况</item>
+        <item>进度查询</item>
+    </string-array>
+    <string name="title_activity_main2">城投计划</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
