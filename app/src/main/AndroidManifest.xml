@@ -25,11 +25,6 @@
             android:label="城投管理—首页"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.thefinestartist.finestwebview.FinestWebViewActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="sensor"
-            android:theme="@style/FinestWebViewTheme.Light" />
-        <activity
             android:name=".UrlActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="sensor"

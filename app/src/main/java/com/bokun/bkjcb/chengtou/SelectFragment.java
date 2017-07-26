@@ -32,7 +32,6 @@ import com.bokun.bkjcb.chengtou.Http.RequestListener;
 import com.bokun.bkjcb.chengtou.Http.XmlParser;
 import com.bokun.bkjcb.chengtou.Util.L;
 import com.bokun.bkjcb.chengtou.Util.NetUtils;
-import com.thefinestartist.finestwebview.FinestWebView;
 import com.vlonjatg.progressactivity.ProgressRelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
@@ -213,7 +212,6 @@ public class SelectFragment extends Fragment implements RequestListener {
             if (details != null && details.size() > 0) {
                 layout.showContent();
                 adapter.setData(details);
-//                webView.loadUrl(Constants.GET_DETAIL_URL + details.get(2).getId() + "&type=计划管理");
             } else {
                 layout.showEmpty(R.drawable.empty, null, "暂无数据");
             }
@@ -227,33 +225,6 @@ public class SelectFragment extends Fragment implements RequestListener {
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
-
-    private void openUrl(String title, String url) {
-        new FinestWebView.Builder(getContext()).theme(R.style.FinestWebViewTheme)
-                .titleDefault(title)
-                .showUrl(false)
-                .updateTitleFromHtml(false)
-                .statusBarColorRes(R.color.colorPrimary)
-                .toolbarColorRes(R.color.colorPrimary)
-                .titleColorRes(R.color.finestWhite)
-//                .urlColorRes(R.color.bluePrimaryLight)
-                .iconDefaultColorRes(R.color.finestWhite)
-                .progressBarColorRes(R.color.finestWhite)
-//                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
-//                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
-//                .stringResCopiedToClipboard(R.string.copied_to_clipboard)
-                .showSwipeRefreshLayout(true)
-                .swipeRefreshColorRes(R.color.colorPrimaryDark)
-//                .menuSelector(R.drawable.selector_light_theme)
-//                .menuTextGravity(Gravity.CENTER)
-//                .menuTextPaddingRightRes(R.dimen.defaultMenuTextPaddingLeft)
-                .dividerHeight(0)
-                .gradientDivider(false)
-                .disableIconMenu(true)
-                .showIconMenu(false)
-                .setCustomAnimations(R.anim.slide_up, R.anim.hold, R.anim.hold, R.anim.slide_down)
-                .show(url);
     }
 
     private void ToUrl(String id, String name) {

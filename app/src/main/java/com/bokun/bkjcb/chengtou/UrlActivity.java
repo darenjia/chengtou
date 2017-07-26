@@ -23,6 +23,8 @@ import org.angmarch.views.NiceSpinner;
 
 import java.util.Arrays;
 
+import qiu.niorgai.StatusBarCompat;
+
 /**
  * Created by DengShuai on 2017/7/26.
  */
@@ -42,6 +44,7 @@ public class UrlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_url);
+        StatusBarCompat.setStatusBarColor(UrlActivity.this, getResources().getColor(R.color.colorPrimary));
         spinner = (NiceSpinner) findViewById(R.id.select_spinner);
         webView = (WebView) findViewById(R.id.url_web);
         layout = (ProgressRelativeLayout) findViewById(R.id.layout_url);
