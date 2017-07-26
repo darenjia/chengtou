@@ -234,7 +234,7 @@ public class HttpManager implements Runnable {
         if (requestVo.parser == null) {
             return new HashMap<String, Object>();
         }
-        return requestVo.parser.parseJSON(result);
+        return requestVo.parser.parseJSON(result, "");
     }
 
     /**

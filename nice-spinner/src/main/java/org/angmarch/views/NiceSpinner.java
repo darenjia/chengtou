@@ -17,7 +17,6 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -319,7 +318,7 @@ public class NiceSpinner extends AppCompatTextView {
 //        popupWindow.setHeight(listView.getMeasuredHeight() - getMeasuredHeight() - dropDownListPaddingBottom);
         int[] location2 = new int[2];
         this.getLocationOnScreen(location2);
-        Log.i("Deng", "" + location2[1] + "屏幕高度：" + screenHeight + listView.getMeasuredHeight());
+//        Log.i("Deng", "" + location2[1] + "屏幕高度：" + screenHeight + listView.getMeasuredHeight());
         if (listView.getMeasuredHeight() + getMeasuredHeight() + location2[1] + dropDownListPaddingBottom < screenHeight) {
             popupWindow.setHeight(listView.getMeasuredHeight() - dropDownListPaddingBottom);
         } else {

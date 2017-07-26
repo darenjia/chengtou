@@ -1,11 +1,15 @@
 package com.bokun.bkjcb.chengtou;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
@@ -45,7 +49,7 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
     private ProgressBar bar;
     private String[] array;
     private TextView textView;
-    private ProgressRelativeLayout layout;
+    private ProgressRelativeLayout layout, layout1;
     private String url;
     private ArrayList<String> results;
 
@@ -60,6 +64,7 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
         bar = (ProgressBar) view.findViewById(R.id.progress);
         textView = (TextView) view.findViewById(R.id.on);
         layout = (ProgressRelativeLayout) view.findViewById(R.id.progressLayout);
+        layout1 = (ProgressRelativeLayout) view.findViewById(R.id.progressLayout1);
 
         textView.setText("不可查看");
         textView.setBackgroundColor(getResources().getColor(R.color.l_black));
@@ -77,12 +82,39 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
                 view.loadUrl(url);
                 return true;
             }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                layout1.showLoading(Arrays.asList(R.id.title, R.id.spinner, R.id.on));
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                layout1.showContent();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+//                layout.showEmpty(R.drawable.empty, null, "网络错误",Arrays.asList(R.id.title, R.id.spinner, R.id.on));
+            }
+
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+//                layout.showEmpty(R.drawable.empty, null, "暂无数据",Arrays.asList(R.id.title, R.id.spinner, R.id.on));
+            }
         });
     }
 
     @Override
     public void onClick(View v) {
 //        String[] years = getResources().getStringArray(R.array.year);
+        if (results == null || results.size() == 0) {
+            return;
+        }
         String year = results.get(spinner1.getSelectedIndex());
         String mc = array[spinner.getSelectedIndex()];
         url = Constants.GET_TABLT_DATA_URL + mc + "&year=" + year;
@@ -93,11 +125,8 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
 
     private void getData() {
         array = getResources().getStringArray(R.array.xuanxiang);
-        L.i(array.length);
         spinner.attachDataSource(Arrays.asList(array));
         HashMap<String, String> map = new HashMap<>();
-        /*map.put("year", "2017");
-        map.put("biaotiming", "2.2正式项目");*/
         HttpRequestVo requestVo = new HttpRequestVo(map, "Getyear");
         HttpManager manager = new HttpManager(getContext(), this, requestVo);
         manager.postRequest();
@@ -112,17 +141,19 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
             EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_NULL));
             return;
         }
-        L.i(results.size());
-        spinner1.attachDataSource(results);
-//        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, results);
+        boolean b = EventBus.getDefault().isRegistered(this);
+        if (!b) {
+            EventBus.getDefault().register(this);
+        }
         EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS));
+        L.i(results.size() + "获取到年份" + b);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessage(DefaultEvent event) {
         if (event.getState_code() == DefaultEvent.GET_DATA_SUCCESS) {
-            L.i("O(∩_∩)O~");
 //            spinner1.setAdapter(adapter);
+            spinner1.attachDataSource(results);
             spinner1.setVisibility(View.VISIBLE);
             bar.setVisibility(View.GONE);
             textView.setText("查看");
@@ -168,12 +199,12 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
                     }
                 });
             } else {
-                layout.showError(R.drawable.vector_drawable_error, "", "无网络，请检查后再试", "点击重试", new View.OnClickListener() {
+                layout1.showError(R.drawable.vector_drawable_error, "", "无网络，请检查后再试", "点击重试", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         getNetState(flag);
                     }
-                }, Arrays.asList(R.id.title, R.id.spinner, R.id.on));
+                });
             }
         }
     }

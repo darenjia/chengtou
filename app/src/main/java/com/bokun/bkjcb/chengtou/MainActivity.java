@@ -1,5 +1,6 @@
 package com.bokun.bkjcb.chengtou;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,7 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.bokun.bkjcb.chengtou.Util.L;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -33,6 +37,8 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private Fragment currentFragment;
     private Toolbar toolbar;
+    private boolean opened;
+    private long time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,24 +61,79 @@ public class MainActivity extends AppCompatActivity
         tableFragment = new TableFragment();
         selectFragment = new SelectFragment();
 
-        currentFragment = mainFragment;
+        loadFirstPage();
 
-        transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.table_layout, currentFragment);
-        transaction.commit();
-        changTitle("城投计划——首页");
+        setDrawerLayoutListener();
+    }
+
+    private void setDrawerLayoutListener() {
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                opened = false;
+                InputMethodManager manager = ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE));
+                boolean isOpen = manager.isActive();
+                if (isOpen) {//因为是在fragment下，所以用了getView()获取view，也可以用findViewById（）来获取父控件
+                    drawer.requestFocus();//使其它view获取焦点.这里因为是在fragment下,所以便用了getView(),可以指定任意其它view
+                    manager.hideSoftInputFromWindow(MainActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+      /*  DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
 //            super.onBackPressed();
             drawer.openDrawer(GravityCompat.START);
+        }*/
+        if (!drawer.isDrawerOpen(GravityCompat.START) && !opened) {
+            drawer.openDrawer(GravityCompat.START);
+        } else if (drawer.isDrawerOpen(GravityCompat.START) && !opened) {
+            drawer.closeDrawer(GravityCompat.START);
+            opened = true;
+        } else if (opened && currentFragment != mainFragment) {
+            loadFirstPage();
+        } else {
+            if (System.currentTimeMillis() - time > 1000) {
+                time = System.currentTimeMillis();
+                Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
+            } else {
+                finish();
+            }
         }
+    }
+
+    private void loadFirstPage() {
+        currentFragment = mainFragment;
+        try {
+            transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.table_layout, currentFragment);
+            transaction.commit();
+        } catch (IllegalStateException e) {
+            transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.table_layout, currentFragment);
+            transaction.commit();
+        }
+        changTitle("城投管理—首页");
     }
 
     @Override
@@ -104,13 +165,13 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
             currentFragment = mainFragment;
-            changTitle("城投计划——首页");
+            changTitle("城投管理—首页");
         } else if (id == R.id.nav_lookout) {
             currentFragment = tableFragment;
-            changTitle("城投计划——查看统计表");
+            changTitle("城投管理—查看统计表");
         } else if (id == R.id.nav_select) {
             currentFragment = selectFragment;
-            changTitle("城投计划——信息查询");
+            changTitle("城投管理—信息查询");
           /*  } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {*/
@@ -136,7 +197,6 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_select);
         }
     }
-
     private void changTitle(String title) {
         toolbar.setTitle(title);
     }

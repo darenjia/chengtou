@@ -1,5 +1,6 @@
 package com.bokun.bkjcb.chengtou.Http;
 
+import com.bokun.bkjcb.chengtou.Domain.Detail;
 import com.bokun.bkjcb.chengtou.Domain.JsonResult;
 import com.bokun.bkjcb.chengtou.Domain.Result;
 import com.bokun.bkjcb.chengtou.Util.L;
@@ -47,11 +48,11 @@ public class JsonParser {
         return result;
     }
 
-    public static String parseJSON(String result) {
+    public static String parseJSON(String result,String name) {
         String json = null;
         try {
             JSONObject object = new JSONObject(result);
-            json = object.get("GetyearResult").toString();
+            json = object.get(name).toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -60,7 +61,7 @@ public class JsonParser {
 
     public static ArrayList<Result> getResultData(String json) {
         L.i(json);
-        json = parseJSON(json);
+        json = parseJSON(json,"GetyearResult");
         L.i(json);
         ArrayList<Result> results = new ArrayList<>();
         if (json.equals("{}")) {
@@ -76,13 +77,31 @@ public class JsonParser {
         }
         return results;
     }
+ public static ArrayList<Detail> getResultDetail(String json) {
+//        L.i(json);
+        json = parseJSON(json,"GetxinxichaxunResult");
+        L.i(json);
+        ArrayList<Detail> results = new ArrayList<>();
+        if (json.equals("{}")) {
+            return results;
+        }
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            Detail result = gson.fromJson(element, Detail.class);
+            results.add(result);
+        }
+        return results;
+    }
 
     public static ArrayList<String> getYear(String json) {
         L.i(json);
         if (json.equals("{}")) {
             return null;
         }
-        json = parseJSON(json);
+        json = parseJSON(json,"GetyearResult");
         ArrayList<String> strings = new ArrayList<>();
         try {
             JSONArray array = new JSONArray(json);

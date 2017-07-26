@@ -29,7 +29,7 @@
     <string-array name="select_items">
         <item>基本信息</item>
         <item>审批情况</item>
-        <item>进度查询</item>
+        <item>计划管理</item>
     </string-array>
     <string name="title_activity_main2">城投计划</string>
 

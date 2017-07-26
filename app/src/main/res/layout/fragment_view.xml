@@ -9,10 +9,11 @@
         android:id="@+id/progressLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        progressActivity:emptyBackgroundColor="#fbc02d"
+        progressActivity:emptyBackgroundColor="#FFFFFF"
         progressActivity:errorBackgroundColor="#eeeff1"
         progressActivity:errorButtonTextColor="#818181"
-        progressActivity:loadingBackgroundColor="#FFFFFF">
+        progressActivity:loadingBackgroundColor="#FFFFFF"
+        progressActivity:loadingProgressBarColor="@color/l_green">
 
         <LinearLayout
             android:id="@+id/content"
@@ -71,10 +72,21 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <WebView
-                android:id="@+id/web"
+            <com.vlonjatg.progressactivity.ProgressRelativeLayout
+                android:id="@+id/progressLayout1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                progressActivity:emptyBackgroundColor="#FFFFFF"
+                progressActivity:errorBackgroundColor="#eeeff1"
+                progressActivity:errorButtonTextColor="#818181"
+                progressActivity:loadingBackgroundColor="#FFFFFF"
+                progressActivity:loadingProgressBarColor="@color/l_green">
+
+                <WebView
+                    android:id="@+id/web"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </com.vlonjatg.progressactivity.ProgressRelativeLayout>
 
         </LinearLayout>
 

@@ -6,15 +6,15 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_main"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/vector_drawable_shouye"
             android:title="首页" />
         <item
             android:id="@+id/nav_lookout"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/vector_drawable_table"
             android:title="查看统计表" />
         <item
             android:id="@+id/nav_select"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/vector_drawable_search"
             android:title="信息查询" />
         <!--  <item
            android:id="@+id/nav_manage"
@@ -22,7 +22,7 @@
            android:title="Tools" />-->
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Setting">
         <menu>
             <!-- <item
                  android:id="@+id/nav_share"
