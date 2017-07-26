@@ -31,6 +31,7 @@ import com.bokun.bkjcb.chengtou.Http.JsonParser;
 import com.bokun.bkjcb.chengtou.Http.RequestListener;
 import com.bokun.bkjcb.chengtou.Http.XmlParser;
 import com.bokun.bkjcb.chengtou.Util.L;
+import com.bokun.bkjcb.chengtou.Util.NetUtils;
 import com.thefinestartist.finestwebview.FinestWebView;
 import com.vlonjatg.progressactivity.ProgressRelativeLayout;
 
@@ -157,19 +158,23 @@ public class SelectFragment extends Fragment implements RequestListener {
 
     private void startRequest() {
         L.i("发送请求");
-
         ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(text.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-
         String word = text.getText().toString();
-        if (!TextUtils.isEmpty(word)) {
-        }
         layout.showLoading();
         sendRequest(word);
 
     }
 
-    private void sendRequest(String word) {
+    private void sendRequest(final String word) {
+        if (!NetUtils.isConnected(getContext())) {
+            layout.showError(R.drawable.vector_drawable_error, "", "无网络，请检查后再试", "点击重试", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sendRequest(word);
+                }
+            });
+            return;
+        }
         if (manager != null && manager.isRunning()) {
             manager.cancelHttpRequest();
         }
@@ -183,6 +188,7 @@ public class SelectFragment extends Fragment implements RequestListener {
         HttpRequestVo requestVo = new HttpRequestVo(map, "Getxinxichaxun");
         manager = new HttpManager(getContext(), this, requestVo);
         manager.postRequest();
+        layout.showLoading();
     }
 
     @Override

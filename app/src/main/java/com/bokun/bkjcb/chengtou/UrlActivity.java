@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 
 import com.bokun.bkjcb.chengtou.Util.Constants;
 import com.bokun.bkjcb.chengtou.Util.L;
+import com.bokun.bkjcb.chengtou.Util.NetUtils;
 import com.vlonjatg.progressactivity.ProgressRelativeLayout;
 
 import org.angmarch.views.NiceSpinner;
@@ -31,7 +32,6 @@ public class UrlActivity extends AppCompatActivity {
     private NiceSpinner spinner;
     private String[] array;
     private WebView webView;
-    private boolean loadError;
     private String type = "基本信息";
     private String id;
     private String name;
@@ -96,7 +96,7 @@ public class UrlActivity extends AppCompatActivity {
         });
         webView.getSettings().setJavaScriptEnabled(true);
         initData();
-        webView.loadUrl(Constants.GET_DETAIL_URL + id + "&type=" + type);
+        loadPage();
     }
 
     private void initData() {
@@ -113,5 +113,18 @@ public class UrlActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void loadPage() {
+        if (NetUtils.isConnected(this)) {
+            webView.loadUrl(Constants.GET_DETAIL_URL + id + "&type=" + type);
+        } else {
+            layout.showError(R.drawable.vector_drawable_error, "", "无网络，请检查后再试", "点击重试", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadPage();
+                }
+            });
+        }
     }
 }
