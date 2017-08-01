@@ -6,13 +6,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,6 +27,7 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboard|screenSize"
             android:label="城投管理—首页"
+            android:screenOrientation="sensor"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".UrlActivity"

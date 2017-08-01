@@ -20,14 +20,12 @@ import android.widget.Toast;
 
 import com.bokun.bkjcb.chengtou.Util.L;
 import com.github.mikephil.charting.data.BarDataSet;
-import com.rmondjone.locktableview.LockTableView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private LinearLayout parentView;
     BarDataSet set1;
-    private LockTableView mLockTableView;
     private LinearLayout show;
     private Fragment mainFragment;
     private Fragment tableFragment;

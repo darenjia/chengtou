@@ -13,5 +13,6 @@
     <color name="l_black">#bababa</color>
     <color name="font_color">#737373</color>
     <color name="l_white">#dcdcdc</color>
+    <color name="white">#ffffff</color>
 
 </resources>

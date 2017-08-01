@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:paddingTop="10dp"
-                    android:text="全部项目"
+                    android:text="当年及时率全部项目"
                     android:textSize="18sp" />
 
                 <com.github.mikephil.charting.charts.BarChart
@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:paddingTop="10dp"
-                    android:text="重大项目"
+                    android:text="当年及时率重大项目"
                     android:textSize="18sp" />
 
                 <com.github.mikephil.charting.charts.BarChart

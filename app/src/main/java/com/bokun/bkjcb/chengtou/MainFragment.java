@@ -1,15 +1,32 @@
 package com.bokun.bkjcb.chengtou;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bokun.bkjcb.chengtou.ChartUtil.MyAxisValueFormatter;
 import com.bokun.bkjcb.chengtou.ChartUtil.MyLineChartValueFormatter;
+import com.bokun.bkjcb.chengtou.ChartUtil.MyLineValueFormatter;
 import com.bokun.bkjcb.chengtou.ChartUtil.MyValueFormatter;
+import com.bokun.bkjcb.chengtou.Domain.TableResult;
+import com.bokun.bkjcb.chengtou.Domain.TableResultZD;
+import com.bokun.bkjcb.chengtou.Domain.TableResultZDXM;
+import com.bokun.bkjcb.chengtou.Event.DefaultEvent;
+import com.bokun.bkjcb.chengtou.Http.HttpManager;
+import com.bokun.bkjcb.chengtou.Http.HttpRequestVo;
+import com.bokun.bkjcb.chengtou.Http.JsonParser;
+import com.bokun.bkjcb.chengtou.Http.RequestListener;
+import com.bokun.bkjcb.chengtou.Http.XmlParser;
+import com.bokun.bkjcb.chengtou.Util.CacheUtil;
+import com.bokun.bkjcb.chengtou.Util.L;
+import com.bokun.bkjcb.chengtou.Util.NetUtils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LimitLine;
@@ -23,9 +40,14 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.rmondjone.locktableview.LockTableView;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,53 +56,43 @@ import java.util.List;
 
 public class MainFragment extends Fragment {
     BarDataSet set1;
-    private LockTableView mLockTableView;
+    private BarChart chart1;
+    private ArrayList<TableResult> results1;
+    private ArrayList<TableResultZD> results2;
+    private ArrayList<TableResultZDXM> results3;
+    private BarChart chart2;
+    private LineChart chart3;
+    private String str_data1;
+    private String str_data2;
+    private String str_data3;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, null);
         init(view);
+        getDataFromCache();
         return view;
     }
 
     private void init(View view) {
 
 //        parentView = (LinearLayout) view.findViewById(R.id.parent_view);
-        BarChart chart1 = (BarChart) view.findViewById(R.id.chart1);
-        BarChart chart2 = (BarChart) view.findViewById(R.id.chart2);
-        LineChart chart3 = (LineChart) view.findViewById(R.id.chart3);
-
-        float[] group1 = {2, 10, 0, 0, 0, 0};
-        float[] group2 = {0, 1, 0, 0, 0, 0};
-        float[] group3 = {4, 6, 1, 1, 0, 0};
-
-        float[] group4 = {1, 4, 0, 0, 0, 0};
-        float[] group5 = {0, 1, 0, 0, 0, 0};
-        float[] group6 = {4, 3, 0, 0, 0, 0};
-
-        List<BarEntry> entriesGroup1 = new ArrayList<>();
-        List<BarEntry> entriesGroup2 = new ArrayList<>();
-        setChartData(group1, group2, group3, entriesGroup1);
-        setChartData(group4, group5, group6, entriesGroup2);
-
+        chart1 = (BarChart) view.findViewById(R.id.chart1);
+        chart2 = (BarChart) view.findViewById(R.id.chart2);
+        chart3 = (LineChart) view.findViewById(R.id.chart3);
 
         chartSetting(chart1);
         chartSetting(chart2);
-
-        setChart(chart1, entriesGroup1, "");
-        setChart(chart2, entriesGroup2, "");
-        setLineChart(chart3);
-
     }
 
-    private void setChart(BarChart chart1, List<BarEntry> entriesGroup1, String lable) {
-        if (chart1.getData() != null &&
-                chart1.getData().getDataSetCount() > 0) {
-            set1 = (BarDataSet) chart1.getData().getDataSetByIndex(0);
+    private void setChart(BarChart chart, List<BarEntry> entriesGroup1, String lable) {
+        if (chart.getData() != null &&
+                chart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet) chart.getData().getDataSetByIndex(0);
             set1.setValues(entriesGroup1);
-            chart1.getData().notifyDataChanged();
-            chart1.notifyDataSetChanged();
+            chart.getData().notifyDataChanged();
+            chart.notifyDataSetChanged();
         } else {
             set1 = new BarDataSet(entriesGroup1, lable);
             set1.setStackLabels(new String[]{"及时开工", "未及时开工", "未开工"});
@@ -89,19 +101,12 @@ public class MainFragment extends Fragment {
             data.setValueFormatter(new MyValueFormatter());
             data.setBarWidth(0.9f); // set custom bar width
             set1.setColors(new int[]{getMyColor(R.color.js), getMyColor(R.color.wjs), getMyColor(R.color.wkg)});
-            chart1.setData(data);
+            chart.setData(data);
         }
-        chart1.animateY(500);
-        chart1.getDescription().setEnabled(false);
-        chart1.setFitBars(true); // make the x-axis fit exactly all bars
-        chart1.invalidate(); // refresh
-    }
-
-    private void setChartData(float[] group1, float[] group2, float[] group3, List<BarEntry> entriesGroup1) {
-        // fill the lists
-        for (int i = 0; i < group1.length; i++) {
-            entriesGroup1.add(new BarEntry(i, new float[]{group1[i], group2[i], group3[i]}));
-        }
+        chart.animateY(500);
+        chart.getDescription().setEnabled(false);
+        chart.setFitBars(true); // make the x-axis fit exactly all bars
+        chart.invalidate(); // refresh
     }
 
     private void chartSetting(BarChart chart) {
@@ -134,59 +139,24 @@ public class MainFragment extends Fragment {
         chart.setScaleYEnabled(false);
     }
 
-    /* private void showtable(ArrayList<Result> results) {
-         ArrayList<ArrayList<String>> mTableDatas = new ArrayList<>();
-         ArrayList<String> strings = new ArrayList<>(Arrays.asList("单位名称", "项目数量", "批复总投资", "完成工作量", "财务支用", "计划工作量", "预算支用", "城投承担", "年份"));
-         mTableDatas.add(strings);
-         for (Result result : results) {
-             ArrayList<String> list = new ArrayList<>();
- //            list.add(result.getBiaotiming());
-             list.add(result.getDanweimingcheng());
-             list.add(result.getXiangmushu());
-             list.add(result.getPifuzongtouzi());
-             list.add(result.getZsndlj_wanchenggongzuoliang());
-             list.add(result.getZsndl_caiwuzhiyong());
-             list.add(result.getBennian_jihuagongzuoliang());
-             list.add(result.getBennian_yusuanzhiyong());
-             list.add(result.getChengtouchengdan());
-             list.add(result.getYear());
-             mTableDatas.add(list);
-         }
-
-         mLockTableView = new LockTableView(this, parentView, mTableDatas);
-         mLockTableView.setLockFristColumn(false) //是否锁定第一列
-                 .setLockFristRow(true) //是否锁定第一行
-                 .setMaxColumnWidth(100) //列最大宽度
-                 .setMinColumnWidth(70) //列最小宽度
-                 .setMinRowHeight(20)//行最小高度
-                 .setMaxRowHeight(60)//行最大高度
-                 .setTextViewSize(16) //单元格字体大小
-                 .setFristRowBackGroudColor(R.color.table_head)//表头背景色
-                 .setTableHeadTextColor(R.color.beijin)//表头字体颜色
-                 .setTableContentTextColor(R.color.border_color)//单元格字体颜色
-                 .setNullableString("N/A"); //空值替换值
-
-
-     }
- */
     private int getMyColor(int color) {
         return getResources().getColor(color);
     }
 
-    private void setLineChart(LineChart chart) {
+    private void setLineChart(LineChart chart, TableResultZDXM result) {
 
         chart.getDescription().setEnabled(false);
         chart.getAxisRight().setEnabled(false);
-        LimitLine ll1 = new LimitLine(44.16f, "44.16");
-        ll1.setLineWidth(1f);
-        ll1.setLineColor(getMyColor(R.color.line_red));
-        ll1.enableDashedLine(10f, 20f, 0f);
-        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-        ll1.setTextSize(10f);
+        LimitLine ll = new LimitLine(Float.valueOf(result.getWanchengqingkuangbaifenbi().replace("%", "")), result.getWanchengqingkuangbaifenbi());
+        ll.setLineWidth(1f);
+        ll.setLineColor(getMyColor(R.color.line_red));
+        ll.enableDashedLine(10f, 20f, 0f);
+        ll.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
+        ll.setTextSize(10f);
         YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setAxisMinimum(0f);
         leftAxis.setDrawGridLines(false);
-        leftAxis.addLimitLine(ll1);
+        leftAxis.addLimitLine(ll);
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -197,16 +167,16 @@ public class MainFragment extends Fragment {
         xAxis.setAxisMinimum(-.5f);
         xAxis.setAxisMaximum(6.5f);
         xAxis.setValueFormatter(new MyLineChartValueFormatter());
-        setData(chart);
+        chart.invalidate();
     }
 
-    private void setData(LineChart mChart) {
-        float[] array = {50.96f, 42.72f, 46.38f, 100.03f, 33.33f, 23.40f, 53.28f};
-
-        ArrayList<Entry> values = new ArrayList<Entry>();
-
-        for (int i = 0; i < array.length; i++) {
-            values.add(new Entry(i, array[i]));
+    private void setData(LineChart mChart, ArrayList<TableResultZDXM> list) {
+        ArrayList<Entry> values = new ArrayList<>();
+        int flag = 0;
+        for (int i = 0; i < list.size() - 1; i++) {
+            TableResultZDXM result = list.get(i);
+            flag = getLineFlag(result.getLeixing());
+            values.add(new Entry(flag, Float.valueOf(result.getWanchengqingkuangbaifenbi().replace("%", ""))));
         }
 
         LineDataSet set;
@@ -227,11 +197,12 @@ public class MainFragment extends Fragment {
 //            set1.enableDashedLine(10f, 5f, 0f);
             set.enableDashedHighlightLine(10f, 5f, 0f);
             set.setColor(getMyColor(R.color.line_red));
-            set.setCircleColor(getMyColor(R.color.border_color));
+            set.setCircleColor(getMyColor(R.color.font_color));
             set.setLineWidth(1f);
             set.setCircleRadius(3f);
             set.setDrawCircleHole(true);
             set.setValueTextSize(9f);
+            set.setValueFormatter(new MyLineValueFormatter());
             set.setDrawFilled(true);
             set.setFormLineWidth(1f);
             //set1.setFormLineDashEffect(new DashPathEffect(new float[]{10f, 5f}, 0f));
@@ -245,5 +216,216 @@ public class MainFragment extends Fragment {
             mChart.setScaleXEnabled(false);
             mChart.setScaleYEnabled(false);
         }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessage(DefaultEvent event) {
+        if (event.getState_code() == DefaultEvent.GET_DATA_NULL) {
+            Snackbar.make(chart1, "无网络连接，请检查网络", Snackbar.LENGTH_LONG).setAction("设置", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                    getContext().startActivity(intent);
+                }
+            }).show();
+        } else {
+            if (event.getType() == 0) {
+                List<BarEntry> entriesGroup = new ArrayList<>();
+                setChartData(results1, entriesGroup);
+                setChart(chart1, entriesGroup, "");
+                Toast.makeText(getContext(), "图表一数据已更新", Toast.LENGTH_SHORT).show();
+            } else if (event.getType() == 1) {
+                List<BarEntry> entriesGroup = new ArrayList<>();
+                setChartDataZD(results2, entriesGroup);
+                setChart(chart2, entriesGroup, "");
+                Toast.makeText(getContext(), "图表二数据已更新", Toast.LENGTH_SHORT).show();
+            } else {
+                setData(chart3, results3);
+                setLineChart(chart3, results3.get(results3.size() - 1));
+                Toast.makeText(getContext(), "图表三数据已更新", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void getData(String type, RequestListener listener) {
+        HashMap<String, String> map = new HashMap<>();
+        HttpRequestVo requestVo = new HttpRequestVo(map, type);
+        HttpManager manager = new HttpManager(getContext(), listener, requestVo);
+        manager.postRequest();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (NetUtils.isConnected(getContext())) {
+            getData("Getjishilv", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (str_data1 != null && str_data1.equals(s)) {
+                        return;
+                    }
+                    saveData(s, "data1");
+                    results1 = JsonParser.getTableData(s);
+                    L.i(results1.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 0));
+                }
+            });
+            getData("Getzhongdajishilv ", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (str_data2 != null && str_data2.equals(s)) {
+                        return;
+                    }
+                    saveData(s, "data2");
+                    results2 = JsonParser.getTableDataZD(s);
+                    L.i(results2.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 1));
+                }
+            });
+            getData("Getzhongdaxiangmuwanchengqingkuang ", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (str_data3 != null && str_data3.equals(s)) {
+                        return;
+                    }
+                    saveData(s, "data3");
+                    results3 = JsonParser.getTableDataZDXM(s);
+                    L.i(results3.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 2));
+                }
+            });
+        } /*else {
+
+        }*/
+    }
+
+    private void setChartData(ArrayList<TableResult> data1, List<BarEntry> entriesGroup) {
+        TableResult result = null;
+        int flag = 0;
+        // fill the lists
+        for (int i = 0; i < data1.size(); i++) {
+            result = data1.get(i);
+            flag = getFlag(result.getSuoshubankuai());
+            entriesGroup.add(new BarEntry(flag, new float[]{result.getJihuashu(), result.getWeijishikaigong(), result.getWeikaigong()}));
+        }
+    }
+
+    private void setChartDataZD(ArrayList<TableResultZD> data, List<BarEntry> entriesGroup) {
+        TableResultZD result = null;
+        int flag = 0;
+        for (int i = 0; i < data.size(); i++) {
+            result = data.get(i);
+            flag = getFlag(result.getSuoshubankuai());
+            entriesGroup.add(new BarEntry(flag, new float[]{result.getZhongdajishi(), result.getZhongdaweijishi(), result.getZhongdaweikai()}));
+        }
+    }
+
+    private int getFlag(String s) {
+        int flag;
+        switch (s) {
+            case "路桥":
+                flag = 0;
+                break;
+            case "水务":
+                flag = 1;
+                break;
+            case "置地":
+                flag = 2;
+                break;
+            case "环境":
+                flag = 3;
+                break;
+            case "其它":
+                flag = 4;
+                break;
+            case "航运":
+                flag = 5;
+                break;
+            default:
+                flag = 6;
+                break;
+
+        }
+        return flag;
+    }
+
+
+    private int getLineFlag(String s) {
+        int flag;
+        switch (s) {
+            case "道路":
+                flag = 0;
+                break;
+            case "公路":
+                flag = 1;
+                break;
+            case "内河航道":
+                flag = 2;
+                break;
+            case "原水":
+                flag = 3;
+                break;
+            case "上水":
+                flag = 4;
+                break;
+            case "雨污水":
+                flag = 5;
+                break;
+            case "固废":
+                flag = 6;
+                break;
+            default:
+                flag = 7;
+                break;
+
+        }
+        return flag;
+    }
+
+    private void getDataFromCache() {
+        CacheUtil cacheUtil = new CacheUtil();
+        str_data1 = cacheUtil.getData("data1");
+        str_data2 = cacheUtil.getData("data2");
+        str_data3 = cacheUtil.getData("data3");
+        cacheUtil.close();
+
+        if (str_data1 != null) {
+            results1 = JsonParser.getTableData(str_data1);
+            List<BarEntry> entriesGroup = new ArrayList<>();
+            setChartData(results1, entriesGroup);
+            setChart(chart1, entriesGroup, "");
+        }
+        if (str_data2 != null) {
+            results2 = JsonParser.getTableDataZD(str_data2);
+            List<BarEntry> entriesGroup1 = new ArrayList<>();
+            setChartDataZD(results2, entriesGroup1);
+            setChart(chart2, entriesGroup1, "");
+        }
+        if (str_data3 != null) {
+            results3 = JsonParser.getTableDataZDXM(str_data3);
+            setData(chart3, results3);
+            setLineChart(chart3, results3.get(results3.size() - 1));
+        }
+    }
+
+    private void saveData(String content, String name) {
+        CacheUtil cacheUtil = new CacheUtil();
+        cacheUtil.saveData(name, content);
+        cacheUtil.close();
     }
 }
