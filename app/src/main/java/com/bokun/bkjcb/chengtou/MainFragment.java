@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bokun.bkjcb.chengtou.ChartUtil.MyAxisValueFormatter;
@@ -65,6 +66,7 @@ public class MainFragment extends Fragment {
     private String str_data1;
     private String str_data2;
     private String str_data3;
+    private TextView title1, title2, title3;
 
     @Nullable
     @Override
@@ -81,6 +83,9 @@ public class MainFragment extends Fragment {
         chart1 = (BarChart) view.findViewById(R.id.chart1);
         chart2 = (BarChart) view.findViewById(R.id.chart2);
         chart3 = (LineChart) view.findViewById(R.id.chart3);
+        title1 = (TextView) view.findViewById(R.id.title1);
+        title2 = (TextView) view.findViewById(R.id.title2);
+        title3 = (TextView) view.findViewById(R.id.title3);
 
         chartSetting(chart1);
         chartSetting(chart2);
@@ -245,11 +250,13 @@ public class MainFragment extends Fragment {
                 List<BarEntry> entriesGroup = new ArrayList<>();
                 setChartData(results1, entriesGroup);
                 setChart(chart1, entriesGroup, "");
+                title1.setText(results1.get(0).getYear() + "年全部项目及时率");
                 Toast.makeText(getContext(), "图表一数据已更新", Toast.LENGTH_SHORT).show();
             } else if (event.getType() == 1) {
                 List<BarEntry> entriesGroup = new ArrayList<>();
                 setChartDataZD(results2, entriesGroup);
                 setChart(chart2, entriesGroup, "");
+                title2.setText(results2.get(0).getYear() + "年重大项目及时率");
                 Toast.makeText(getContext(), "图表二数据已更新", Toast.LENGTH_SHORT).show();
             } else {
                 setData(chart3, results3);
@@ -409,12 +416,14 @@ public class MainFragment extends Fragment {
             List<BarEntry> entriesGroup = new ArrayList<>();
             setChartData(results1, entriesGroup);
             setChart(chart1, entriesGroup, "");
+            title1.setText(results1.get(0).getYear() + "年全部项目及时率");
         }
         if (str_data2 != null) {
             results2 = JsonParser.getTableDataZD(str_data2);
             List<BarEntry> entriesGroup1 = new ArrayList<>();
             setChartDataZD(results2, entriesGroup1);
             setChart(chart2, entriesGroup1, "");
+            title2.setText(results2.get(0).getYear() + "年重大项目及时率");
         }
         if (str_data3 != null) {
             results3 = JsonParser.getTableDataZDXM(str_data3);
@@ -427,5 +436,9 @@ public class MainFragment extends Fragment {
         CacheUtil cacheUtil = new CacheUtil();
         cacheUtil.saveData(name, content);
         cacheUtil.close();
+    }
+
+    private void setTitle(TextView tv, String title) {
+        tv.setText(title);
     }
 }
