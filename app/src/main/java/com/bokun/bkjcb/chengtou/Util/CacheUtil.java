@@ -24,11 +24,11 @@ public class CacheUtil {
 
     public CacheUtil() {
         this.context = MyApplication.getContext();
-        try {
-            cache = DiskLruCache.open(getDiskCacheDir(), getAppVersion(), valueCount, max_size);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    }
+
+    public void getCache() throws IOException {
+        cache = DiskLruCache.open(getDiskCacheDir(), getAppVersion(), valueCount, max_size);
     }
 
     public File getDiskCacheDir() {

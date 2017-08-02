@@ -129,7 +129,7 @@ public class JsonParser {
         json = parseJSON(json, "GetjishilvResult");
         L.i(json);
         ArrayList<TableResult> results = new ArrayList<>();
-        if (json.equals("{}")) {
+        if (json == null || json.equals("{}")) {
             return results;
         }
         //将JSON的String 转成一个JsonArray对象
@@ -145,9 +145,9 @@ public class JsonParser {
 
     public static ArrayList<TableResultZD> getTableDataZD(String json) {
         json = parseJSON(json, "GetzhongdajishilvResult");
-        L.i(json);
+        L.i(json + "");
         ArrayList<TableResultZD> results = new ArrayList<>();
-        if (json.equals("{}")) {
+        if (json == null || json.equals("{}")) {
             return results;
         }
         //将JSON的String 转成一个JsonArray对象
@@ -165,7 +165,7 @@ public class JsonParser {
         json = parseJSON(json, "GetzhongdaxiangmuwanchengqingkuangResult");
         L.i(json);
         ArrayList<TableResultZDXM> results = new ArrayList<>();
-        if (json.equals("{}")) {
+        if (json == null || json.equals("{}")) {
             return results;
         }
         //将JSON的String 转成一个JsonArray对象

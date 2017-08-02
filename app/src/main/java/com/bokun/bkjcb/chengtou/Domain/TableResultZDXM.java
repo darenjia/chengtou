@@ -12,6 +12,7 @@ public class TableResultZDXM {
     private String zdfl_xinxi_id;
     private String wanchengqingkuangbaifenbi;
     private String leixing;
+    private int wanchenggongzuoliang;
 
     public String getZdfl_xinxi_id() {
         return zdfl_xinxi_id;
@@ -35,5 +36,13 @@ public class TableResultZDXM {
 
     public void setLeixing(String leixing) {
         this.leixing = leixing;
+    }
+
+    public int getWanchenggongzuoliang() {
+        return wanchenggongzuoliang;
+    }
+
+    public void setWanchenggongzuoliang(int wanchenggongzuoliang) {
+        this.wanchenggongzuoliang = wanchenggongzuoliang;
     }
 }

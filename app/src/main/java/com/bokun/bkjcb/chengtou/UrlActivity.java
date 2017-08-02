@@ -106,6 +106,7 @@ public class UrlActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getExtras().getString("id");
         name = intent.getExtras().getString("name");
+        L.i(id + name);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(name);
         toolbar.setNavigationIcon(R.drawable.back_aa);
@@ -120,6 +121,7 @@ public class UrlActivity extends AppCompatActivity {
 
     private void loadPage() {
         if (NetUtils.isConnected(this)) {
+            L.i(Constants.GET_DETAIL_URL + id + "&type=" + type);
             webView.loadUrl(Constants.GET_DETAIL_URL + id + "&type=" + type);
         } else {
             layout.showError(R.drawable.vector_drawable_error, "", "无网络，请检查后再试", "点击重试", new View.OnClickListener() {
