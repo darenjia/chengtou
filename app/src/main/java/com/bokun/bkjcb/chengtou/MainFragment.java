@@ -76,6 +76,47 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, null);
         init(view);
         getDataFromCache();
+        if (NetUtils.isConnected(getContext())) {
+            getData("Getjishilv", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (s.equals("{}") || (str_data1 != null && str_data1.equals(s))) {
+                        return;
+                    }
+                    saveData(s, "data1");
+                    results1 = JsonParser.getTableData(s);
+                    L.i(results1.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 0));
+                }
+            });
+            getData("Getzhongdajishilv ", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (s.equals("{}") || (str_data2 != null && str_data2.equals(s))) {
+                        return;
+                    }
+                    saveData(s, "data2");
+                    results2 = JsonParser.getTableDataZD(s);
+                    L.i(results2.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 1));
+                }
+            });
+            getData("Getzhongdaxiangmuwanchengqingkuang ", new RequestListener() {
+                @Override
+                public void action(int i, Object object) {
+                    String s = XmlParser.parseSoapObject((SoapObject) object);
+                    if (s.equals("{}") || (str_data3 != null && str_data3.equals(s))) {
+                        return;
+                    }
+                    saveData(s, "data3");
+                    results3 = JsonParser.getTableDataZDXM(s);
+                    L.i(results3.size());
+                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 2));
+                }
+            });
+        }
         return view;
     }
 
@@ -360,47 +401,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (NetUtils.isConnected(getContext())) {
-            getData("Getjishilv", new RequestListener() {
-                @Override
-                public void action(int i, Object object) {
-                    String s = XmlParser.parseSoapObject((SoapObject) object);
-                    if (str_data1 != null && str_data1.equals(s)) {
-                        return;
-                    }
-                    saveData(s, "data1");
-                    results1 = JsonParser.getTableData(s);
-                    L.i(results1.size());
-                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 0));
-                }
-            });
-            getData("Getzhongdajishilv ", new RequestListener() {
-                @Override
-                public void action(int i, Object object) {
-                    String s = XmlParser.parseSoapObject((SoapObject) object);
-                    if (str_data2 != null && str_data2.equals(s)) {
-                        return;
-                    }
-                    saveData(s, "data2");
-                    results2 = JsonParser.getTableDataZD(s);
-                    L.i(results2.size());
-                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 1));
-                }
-            });
-            getData("Getzhongdaxiangmuwanchengqingkuang ", new RequestListener() {
-                @Override
-                public void action(int i, Object object) {
-                    String s = XmlParser.parseSoapObject((SoapObject) object);
-                    if (str_data3 != null && str_data3.equals(s)) {
-                        return;
-                    }
-                    saveData(s, "data3");
-                    results3 = JsonParser.getTableDataZDXM(s);
-                    L.i(results3.size());
-                    EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS, 2));
-                }
-            });
-        } /*else {
+       /*else {
 
         }*/
     }
@@ -493,6 +494,7 @@ public class MainFragment extends Fragment {
         try {
             cacheUtil.getCache();
         } catch (IOException e) {
+            L.i("缓存出问题了");
             File file = cacheUtil.getDiskCacheDir();
             file.delete();
             return;
@@ -501,7 +503,7 @@ public class MainFragment extends Fragment {
         str_data2 = cacheUtil.getData("data2");
         str_data3 = cacheUtil.getData("data3");
         cacheUtil.close();
-
+        L.i(str_data1 + "&&" + str_data2 + "&&" + str_data3);
         if (str_data1 != null && !str_data1.equals("{}")) {
             results1 = JsonParser.getTableData(str_data1);
             List<BarEntry> entriesGroup = new ArrayList<>();

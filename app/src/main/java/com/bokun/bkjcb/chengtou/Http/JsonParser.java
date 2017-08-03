@@ -84,11 +84,11 @@ public class JsonParser {
     public static ArrayList<Detail> getResultDetail(String json) {
 //        L.i(json);
         json = parseJSON(json, "GetxinxichaxunResult");
-        L.i(json);
         ArrayList<Detail> results = new ArrayList<>();
-        if (json.equals("{}")) {
+        if (json == null || json.equals("{}")) {
             return results;
         }
+        L.i(json);
         //将JSON的String 转成一个JsonArray对象
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
         JsonArray array = parser.parse(json).getAsJsonArray();
@@ -101,10 +101,10 @@ public class JsonParser {
     }
 
     public static ArrayList<String> getYear(String json) {
-        L.i(json);
-        if (json.equals("{}")) {
+        if (json == null || json.equals("{}")) {
             return null;
         }
+        L.i(json);
         json = parseJSON(json, "GetyearResult");
         ArrayList<String> strings = new ArrayList<>();
         try {
@@ -126,12 +126,13 @@ public class JsonParser {
     }
 
     public static ArrayList<TableResult> getTableData(String json) {
+        L.i("GetjishilvResult:" + json);
         json = parseJSON(json, "GetjishilvResult");
-        L.i(json);
         ArrayList<TableResult> results = new ArrayList<>();
         if (json == null || json.equals("{}")) {
             return results;
         }
+//        L.i(json);
         //将JSON的String 转成一个JsonArray对象
         com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
         JsonArray array = parser.parse(json).getAsJsonArray();
@@ -144,8 +145,9 @@ public class JsonParser {
     }
 
     public static ArrayList<TableResultZD> getTableDataZD(String json) {
+        L.i("GetzhongdajishilvResult:" + json);
         json = parseJSON(json, "GetzhongdajishilvResult");
-        L.i(json + "");
+//        L.i(json + "");
         ArrayList<TableResultZD> results = new ArrayList<>();
         if (json == null || json.equals("{}")) {
             return results;
@@ -162,8 +164,8 @@ public class JsonParser {
     }
 
     public static ArrayList<TableResultZDXM> getTableDataZDXM(String json) {
+        L.i("GetzhongdaxiangmuwanchengqingkuangResult:" + json);
         json = parseJSON(json, "GetzhongdaxiangmuwanchengqingkuangResult");
-        L.i(json);
         ArrayList<TableResultZDXM> results = new ArrayList<>();
         if (json == null || json.equals("{}")) {
             return results;

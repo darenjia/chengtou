@@ -117,7 +117,7 @@ public class TableFragment extends Fragment implements View.OnClickListener, Req
         }
         String year = results.get(spinner1.getSelectedIndex());
         String mc = array[spinner.getSelectedIndex()];
-        url = Constants.GET_TABLT_DATA_URL + mc + "&year=" + year;
+        url = Constants.HTTP_TABLE_URL + mc + "&year=" + year;
         L.i(url);
         getNetState(false);
 //        webView.loadUrl(url);

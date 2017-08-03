@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bokun.bkjcb.chengtou.Util.Constants;
 import com.bokun.bkjcb.chengtou.Util.L;
 import com.github.mikephil.charting.data.BarDataSet;
 
@@ -136,20 +137,27 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main2, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-
-            return true;
+        switch (item.getItemId()) {
+            case R.id.set_ip1:
+                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_1);
+                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_1);
+                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_1);
+                Toast.makeText(this, "ip:" + Constants.IP_1, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.set_ip2:
+                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_2);
+                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_2);
+                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_2);
+                Toast.makeText(this, "ip:" + Constants.IP_2, Toast.LENGTH_SHORT).show();
+                break;
         }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -195,6 +203,7 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.nav_select);
         }
     }
+
     private void changTitle(String title) {
         toolbar.setTitle(title);
     }

@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -15,7 +17,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bokun.bkjcb.chengtou.Util.Constants;
 import com.bokun.bkjcb.chengtou.Util.SPUtils;
 
 
@@ -120,6 +124,30 @@ public class LoginActivity extends AppCompatActivity {
         return password.length() > 4;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main2, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.set_ip1:
+                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_1);
+                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_1);
+                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_1);
+                Toast.makeText(this, "ip:" + Constants.IP_1, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.set_ip2:
+                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_2);
+                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_2);
+                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_2);
+                Toast.makeText(this, "ip:" + Constants.IP_2, Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate

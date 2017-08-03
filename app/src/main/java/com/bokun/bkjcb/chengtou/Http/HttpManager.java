@@ -4,6 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.bokun.bkjcb.chengtou.Util.Constants;
+import com.bokun.bkjcb.chengtou.Util.L;
 import com.bokun.bkjcb.chengtou.Util.NetUtils;
 
 import org.ksoap2.SoapEnvelope;
@@ -158,8 +159,9 @@ public class HttpManager implements Runnable {
 
             String NAMESPACE = "http://tempuri.org/";
             String METHOD_NAME = requestVo.methodName;
+            L.i(METHOD_NAME);
             //String URL = "http://192.168.137.1:1856/zgzxjkWebService.asmx";
-            String URL = Constants.HTTPURL;
+            String URL = Constants.HTTP_URL;
             // 新建 SoapObject 对象
             SoapObject rpc = new SoapObject(NAMESPACE, METHOD_NAME);
             HashMap<String, String> map = requestVo.requestDataMap;

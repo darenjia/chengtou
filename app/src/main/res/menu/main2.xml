@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="查看统计表"
-        app:showAsAction="always" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/nav_main"
+            android:icon="@drawable/vector_drawable_shouye"
+            android:title="设置">
+            <menu>
+                <item
+                    android:id="@+id/set_ip1"
+                    android:title="192.168.100.104" />
+                <item
+                    android:id="@+id/set_ip2"
+                    android:title="192.168.34.240" />
+            </menu>
+        </item>
+
+    </group>
 </menu>

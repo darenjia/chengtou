@@ -234,4 +234,8 @@ public class SelectFragment extends Fragment implements RequestListener {
         getContext().startActivity(intent);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
 }
