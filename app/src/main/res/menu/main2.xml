@@ -4,15 +4,7 @@
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/vector_drawable_shouye"
-            android:title="设置">
-            <menu>
-                <item
-                    android:id="@+id/set_ip1"
-                    android:title="192.168.100.104" />
-                <item
-                    android:id="@+id/set_ip2"
-                    android:title="192.168.34.240" />
-            </menu>
+            android:title="设置IP">
         </item>
 
     </group>

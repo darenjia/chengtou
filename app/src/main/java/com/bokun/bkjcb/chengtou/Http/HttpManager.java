@@ -162,6 +162,7 @@ public class HttpManager implements Runnable {
             L.i(METHOD_NAME);
             //String URL = "http://192.168.137.1:1856/zgzxjkWebService.asmx";
             String URL = Constants.HTTP_URL;
+            L.i(URL);
             // 新建 SoapObject 对象
             SoapObject rpc = new SoapObject(NAMESPACE, METHOD_NAME);
             HashMap<String, String> map = requestVo.requestDataMap;

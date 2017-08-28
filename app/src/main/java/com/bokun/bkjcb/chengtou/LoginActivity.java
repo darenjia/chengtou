@@ -2,9 +2,11 @@ package com.bokun.bkjcb.chengtou;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -30,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPasswordView;
     private ProgressDialog dialog;
     private CheckBox checkBox;
+    private EditText newIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,17 +136,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.set_ip1:
-                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_1);
-                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_1);
-                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_1);
-                Toast.makeText(this, "ip:" + Constants.IP_1, Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.set_ip2:
-                Constants.HTTP_URL = Constants.HTTPURL.replace("IP_ADDRESS", Constants.IP_2);
-                Constants.HTTP_DERAIL_URL = Constants.GET_DETAIL_URL.replace("IP_ADDRESS", Constants.IP_2);
-                Constants.HTTP_TABLE_URL = Constants.GET_TABLT_DATA_URL.replace("IP_ADDRESS", Constants.IP_2);
-                Toast.makeText(this, "ip:" + Constants.IP_2, Toast.LENGTH_SHORT).show();
+            case R.id.nav_main:
+                creatDialog();
                 break;
         }
         return true;
@@ -218,6 +212,34 @@ public class LoginActivity extends AppCompatActivity {
             SPUtils.put(LoginActivity.this, "UserName", "");
             SPUtils.put(LoginActivity.this, "Password", "");
         }
+    }
+
+    private void creatDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("更换ip");
+        View view = getLayoutInflater().inflate(R.layout.change_ip, null);
+        TextView old = (TextView) view.findViewById(R.id.old_ip);
+        newIp = (EditText) view.findViewById(R.id.new_ip);
+        old.setText("当前ip:" + (String) SPUtils.get(this, "IP", Constants.IP_1));
+        builder.setView(view);
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).setPositiveButton("修改", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String s = newIp.getText().toString();
+                if (!s.equals("")){
+                    SPUtils.put(LoginActivity.this, "IP", s);
+                    Constants.IP_1 = s;
+                    Toast.makeText(LoginActivity.this, "ip:" + Constants.IP_1, Toast.LENGTH_SHORT).show();
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
     }
 }
 
